@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './LoginScreen.css';
 
-const API_URL = 'http://localhost:5000/api';
+// Автоматическое определение API URL
+const API_URL = process.env.REACT_APP_API_URL || window.location.origin + '/api';
+
+console.log('🔧 LoginScreen API_URL:', API_URL);
 
 export default function LoginScreen({ onLogin }) {
   const [loading, setLoading] = useState(true);
@@ -133,15 +136,17 @@ export default function LoginScreen({ onLogin }) {
     setIsAuthenticating(true);
 
     try {
+      const loginUrl = `${API_URL}/auth/login`;
       console.log('========================================');
-      console.log('Sending password to server...');
-      console.log('Password:', password);
+      console.log('📤 Sending login request to:', loginUrl);
+      console.log('🔑 Password length:', password.length);
       
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axios.post(loginUrl, {
         password: password
       });
 
-      console.log('Server response:', response.data);
+      console.log('📥 Server response:', response.data);
+      console.log('📥 Response status:', response.status);
 
       if (response.data.success) {
         console.log('✅ Login successful!');
@@ -160,16 +165,19 @@ export default function LoginScreen({ onLogin }) {
     } catch (err) {
       console.error('❌ Login error:', err);
       if (err.response) {
-        console.log('Server response:', err.response.data);
+        console.log('📥 Server error response:', err.response.data);
+        console.log('📥 Status:', err.response.status);
         if (err.response.data && err.response.data.error) {
           setError(err.response.data.error);
         } else {
           setError('Неверный пароль');
         }
       } else if (err.request) {
-        console.log('No response from server');
+        console.log('❌ No response from server');
+        console.log('❌ Request URL:', err.config?.url);
         setError('Сервер не отвечает. Убедитесь, что backend запущен.');
       } else {
+        console.log('❌ Request setup error:', err.message);
         setError('Ошибка подключения к серверу');
       }
       setIsAuthenticating(false);

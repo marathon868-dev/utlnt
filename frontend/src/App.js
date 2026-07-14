@@ -5,7 +5,10 @@ import FolderGrid from './FolderGrid';
 import FolderModal from './FolderModal';
 import LoginScreen from './LoginScreen';
 
-const API_URL = 'http://localhost:5000/api';
+// Используем переменную окружения для API URL
+const API_URL = process.env.REACT_APP_API_URL || '/api';
+
+console.log('API_URL:', API_URL);
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,19 +18,16 @@ function App() {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [folderFiles, setFolderFiles] = useState({});
 
-  // Проверяем токен при загрузке
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (token) {
-      // Здесь можно добавить проверку токена на сервере
       setIsAuthenticated(true);
     }
   }, []);
 
-  // Загрузка папок
   const fetchFolders = async () => {
     try {
-      console.log('Fetching folders...');
+      console.log('Fetching folders from:', `${API_URL}/folders`);
       const response = await axios.get(`${API_URL}/folders`);
       console.log('Folders loaded:', response.data);
       setFolders(response.data);
@@ -47,6 +47,7 @@ function App() {
       fetchFolders();
     }
   }, [isAuthenticated]);
+
 
   // Загрузка файлов папки
   const loadFolderFiles = async (folderId) => {
