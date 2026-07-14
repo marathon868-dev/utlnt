@@ -1,0 +1,13 @@
+{
+  "name": "archive-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "build": "cd frontend && npm run build",
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "build-frontend": "cd frontend && npm run build"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
